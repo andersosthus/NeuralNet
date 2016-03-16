@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuralNet.Components
+namespace Neural
 {
     [Serializable]
     public class Connection

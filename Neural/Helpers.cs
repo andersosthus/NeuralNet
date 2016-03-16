@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuralNet
+namespace Neural
 {
     public static class Helpers
     {

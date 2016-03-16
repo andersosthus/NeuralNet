@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeuralNet.Components
+namespace Neural
 {
     [Serializable]
     public class Net

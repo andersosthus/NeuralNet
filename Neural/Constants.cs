@@ -1,4 +1,4 @@
-﻿namespace NeuralNet
+﻿namespace Neural
 {
     public static class Constants
     {
