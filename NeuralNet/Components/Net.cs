@@ -2,34 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeuralNet
+namespace NeuralNet.Components
 {
+    [Serializable]
     public class Net
     {
-        private readonly List<double> cheat = new List<double>
-        {
-            0.628224,
-            0.464278,
-            0.826289,
-            0.865627,
-            0.664144,
-            0.141606,
-            0.722373,
-            0.543504,
-            0.0809351,
-            0.893155,
-            0.401318,
-            0.887814,
-            0.359722,
-        };
-
         private double _error;
-        private double _recentAverageError;
 
         public Net(IReadOnlyList<int> topology)
         {
-            var taken = 0;
-
             var layers = new List<Layer>();
             var numberOfLayers = topology.Count;
             for (var layerNumber = 0; layerNumber < numberOfLayers; layerNumber++)
@@ -47,9 +28,7 @@ namespace NeuralNet
 
                 for (var neuronNumber = 0; neuronNumber <= topology[layerNumber]; neuronNumber++)
                 {
-                    var a = cheat.Skip(taken).Take(numberOfOutputs).ToList();
-                    taken += numberOfOutputs;
-                    layer.AddNeuron(new Neuron(numberOfOutputs, neuronNumber, a));
+                    layer.AddNeuron(new Neuron(numberOfOutputs, neuronNumber));
                 }
 
                 // Set the output of the bias neutron to 1.0
@@ -61,12 +40,8 @@ namespace NeuralNet
             Layers = layers;
         }
 
+        public double RecentAverageError { get; private set; }
         public List<Layer> Layers { get; }
-
-        public double GetRecentAverageError()
-        {
-            return _recentAverageError;
-        }
 
         public void FeedForward(List<double> inputValues)
         {
@@ -88,6 +63,11 @@ namespace NeuralNet
             }
         }
 
+        public List<double> GetWeights()
+        {
+            return Layers.SelectMany(x => x.GetWeights()).ToList();
+        }
+
         public void BackProp(List<double> targetValues)
         {
             // Calculate overall net error (RMS of output neuron errors)
@@ -102,13 +82,8 @@ namespace NeuralNet
             _error /= outputLayer.Neurons.Count - 1; // Get average error squared
             _error = Math.Sqrt(_error); // RMS
 
-            // Implement a recent average measurement
-            //var left = RecentAverageError* (Constants.RecentAverageSmoothingFactor + _error);
-            //const double right = Constants.RecentAverageSmoothingFactor + 1.0;
-            //RecentAverageError = left/right;
-
-            _recentAverageError = (_recentAverageError*Constants.RecentAverageSmoothingFactor + _error)/
-                                  (Constants.RecentAverageSmoothingFactor + 1.0);
+            RecentAverageError = (RecentAverageError*Constants.RecentAverageSmoothingFactor + _error)/
+                                 (Constants.RecentAverageSmoothingFactor + 1.0);
 
             // Calculate output layer gradients
             for (var n = 0; n < outputLayer.Neurons.Count - 1; n++)
