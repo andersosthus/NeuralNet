@@ -4,7 +4,7 @@
     {
         public LayerType LayerType { get; set; }
         public int NeutronCount { get; set; }
-        public int OutputCount { private get; set; }
+        public int OutputCount { get; set; }
         public bool HasBias { get; set; } = true;
         public int Order { get; set; }
 

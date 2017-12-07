@@ -41,7 +41,7 @@ namespace NeuralNet
             //}
 
             Console.WriteLine("Generating training data...");
-            var trainingData = TrainingDataSet.CreateXorTraining(10000);
+            var trainingData = TrainingDataSet.CreateXorTraining(100000);
 
             Console.WriteLine("Training network...");
             var myNet = new Net(trainingData.Topology);
@@ -66,7 +66,7 @@ namespace NeuralNet
 
             //myNet.GetWeights().ForEach(x => Console.WriteLine($"Weight: {x}"));
 
-            myNet.FeedForward(new List<double> { 1, 1 });
+            myNet.FeedForward(new List<double> { 0, 0 });
             var res = myNet.GetResults();
             Console.WriteLine($"Got {res[0]}");
 

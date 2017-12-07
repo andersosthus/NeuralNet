@@ -18,7 +18,7 @@ namespace NeuralNet
         {
             var random = new Random();
 
-            var topology = new List<int> {2, 3, 1};
+            var topology = new List<int> {2, 5, 3, 1};
             var data = new List<XorTrainingSample>();
 
             for (var i = count; i >= 0; --i)
