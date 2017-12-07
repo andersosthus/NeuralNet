@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Neural.Descriptors;
 
 namespace Neural
 {
@@ -8,6 +9,58 @@ namespace Neural
     public class Net
     {
         private double _error;
+        private readonly double _recentAverageSmoothingFactor;
+
+        public Net(NetDescriptor net)
+        {
+            _recentAverageSmoothingFactor = net.RecentAverageSmoothingFactor;
+
+            var layers = new List<Layer>();
+
+            foreach (var layerDescriptor in net.Layers)
+            {
+                var layer = new Layer();
+
+                for (var neuronNumber = 0; neuronNumber < layerDescriptor.NeutronCount; neuronNumber++)
+                {
+                    layer.AddNeuron(new Neuron(layerDescriptor.GetOutputCount(), neuronNumber));
+                }
+
+                if (layerDescriptor.HasBias)
+                {
+                    var bias = new Neuron(layerDescriptor.GetOutputCount(), layerDescriptor.NeutronCount) {OutputValue = 1.0};
+                    layer.AddNeuron(bias);
+                }
+
+                layers.Add(layer);
+            }
+
+            //for (var layerNumber = 0; layerNumber < numberOfLayers; layerNumber++)
+            //{
+            //    var layer = new Layer();
+
+            //    if (layerNumber == 0)
+            //        layer.Name = "Input";
+            //    else if (layerNumber == numberOfLayers - 1)
+            //        layer.Name = "Output";
+            //    else
+            //        layer.Name = "Hidden" + (layerNumber + 1);
+
+            //    var numberOfOutputs = (layerNumber == numberOfLayers - 1) ? 0 : topology[layerNumber + 1];
+
+            //    for (var neuronNumber = 0; neuronNumber <= topology[layerNumber]; neuronNumber++)
+            //    {
+            //        layer.AddNeuron(new Neuron(numberOfOutputs, neuronNumber));
+            //    }
+
+            //    // Set the output of the bias neutron to 1.0
+            //    layer.Neurons.Last().OutputValue = 1.0;
+
+            //    layers.Add(layer);
+            //}
+
+            Layers = layers;
+        }
 
         public Net(IReadOnlyList<int> topology)
         {
@@ -82,8 +135,8 @@ namespace Neural
             _error /= outputLayer.Neurons.Count - 1; // Get average error squared
             _error = Math.Sqrt(_error); // RMS
 
-            RecentAverageError = (RecentAverageError*Constants.RecentAverageSmoothingFactor + _error)/
-                                 (Constants.RecentAverageSmoothingFactor + 1.0);
+            RecentAverageError = (RecentAverageError*_recentAverageSmoothingFactor + _error)/
+                                 (_recentAverageSmoothingFactor + 1.0);
 
             // Calculate output layer gradients
             for (var n = 0; n < outputLayer.Neurons.Count - 1; n++)

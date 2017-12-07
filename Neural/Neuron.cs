@@ -93,10 +93,10 @@ namespace Neural
 
                 var newDeltaWeight =
                     // Individual input, magnified by the gradient and train rate:
-                    Constants.Eta
-                    *neuron.OutputValue
+                    //Constants.Eta * FIX
+                    neuron.OutputValue
                     *Gradient
-                    + Constants.Alpha // Also add momentum = a fraction of the previous delta weight
+                    //+ Constants.Alpha FIX // Also add momentum = a fraction of the previous delta weight
                     *oldDeltaWeight;
 
                 neuron.Connections[_myIndex].DeltaWeight = newDeltaWeight;
